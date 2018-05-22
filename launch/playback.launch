@@ -1,0 +1,53 @@
+<launch>
+
+    <arg name="rviz"               default="true"/>
+    <arg name="minimap"            default="true"/>
+    <arg name="obstacle_detect"    default="true"/>
+    <arg name="publish_trajectory" default="true"/>
+    <arg name="wheelchair_pose"    default="true"/>
+    <arg name="arrow_display"      default="true"/>
+
+    <arg name="playback_file" default="long_sample.bag"/>
+
+    
+    <node pkg="rosbag" type="play" name="rosbag" args ="--clock $(find hololens_project)/bag/$(arg playback_file)"/>
+
+
+
+
+    <!-- HERE BE MINIMAP NODES -->
+    <node if="$(arg minimap)" pkg="hololens_project" name="minimap_node" type="minimap_processing.py" output="screen"/>
+    <node if="$(arg minimap)" pkg="image_view" name="minimap_view_node" type="image_view" output="screen">
+        <remap from="image" to="/minimap/image"/>
+    </node>
+    <node if="$(arg minimap)" pkg="hololens_vis" name="image_encoder_node" type="imageToString" output="screen" args="/minimap/image /hololens/display/encoded_minimap"/>
+    
+
+    <!-- HERE BE OBSTACLE DETECTION -->
+    <node if="$(arg obstacle_detect)" pkg="hololens_project" name="obstacle_detection_node" type="obstacle_detection.py" output="screen"/>
+    <node if="$(arg obstacle_detect)" pkg="image_view" name="obstacle_view_node" type="image_view" output="screen">
+        <remap from="image" to="/formatted_grid/obs_debug_image"/>
+    </node>
+
+    <!-- LINE TRAJECTORY NODE -->
+    <node if="$(arg publish_trajectory)" pkg="hololens_project" name="trajectory_publisher_node" type="trajectory_publisher.py" output="screen"/>
+
+    <!-- WHEELCHAIR POSE, MIGHT BE REDUNDANT NOW -->
+    <node if="$(arg wheelchair_pose)" pkg="hololens_project" name="wheelchair_publisher_node" type="wheelchair_pose_publisher.py" output="screen"/>
+
+    <!-- HERE BE SMOOTHED JS NODE -->
+    <node if="$(arg arrow_display)" pkg="hololens_project" name="smooth_js_node" type="smooth_js_node" output="screen"/>
+    
+
+    <!-- HERE BE RVIZ -->
+    <group ns="arta_rviz" if="$(arg rviz)">
+        <param name="robot_description" command="$(find xacro)/xacro.py --inorder '$(find arta_description)/urdf/arta.urdf.xacro'"/>
+        
+		<node pkg="joint_state_publisher" name="joint_state_publisher" type="joint_state_publisher"/>
+		<!-- Convert joint states to TF transforms for rviz, etc -->
+		<node pkg="robot_state_publisher" name="robot_state_publisher" type="state_publisher"/>
+	      
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find hololens_project)/rviz/arta.rviz"/>
+    </group>
+    
+</launch>
