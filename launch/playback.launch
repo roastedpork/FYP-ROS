@@ -39,8 +39,8 @@
     <node if="$(arg arrow_display)" pkg="hololens_project" name="smooth_js_node" type="smooth_js_node" output="screen"/>
 
 
-    <!-- HERE BE WORLD ALIGNMENT
-    <node pkg="hololens_project" name="world_alignment_node" type="world_alignment_node" output="screen"/> -->
+    <!-- HERE BE WORLD ALIGNMENT -->
+    <node pkg="hololens_project" name="world_alignment_node" type="world_alignment_node" output="screen"/>
 
 
     <!-- HERE BE RVIZ -->
