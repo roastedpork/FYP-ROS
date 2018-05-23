@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
             R.at<float>(2, 0), R.at<float>(2, 1), R.at<float>(2, 2));
         
         tf::Transform T_RH(rotation, origin); // ROS-Hololens Transformation 
-        tf::StampedTransform TStamped(T_RH, ros::Time::now(), "holoWorld", "rosWorld");
+       tf::StampedTransform TStamped(T_RH, ros::Time::now(), "rosWorld", "holoWorld");
 
         br.sendTransform(TStamped);
         updated = false;
