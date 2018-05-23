@@ -1,19 +1,31 @@
 <launch>
 
-    <arg name="rviz"               default="true"/>
-    <arg name="minimap"            default="true"/>
-    <arg name="obstacle_detect"    default="true"/>
-    <arg name="publish_trajectory" default="true"/>
-    <arg name="wheelchair_pose"    default="true"/>
-    <arg name="arrow_display"      default="true"/>
+    <arg name="rviz"                default="true"/>
+    <arg name="minimap"             default="true"/>
+    <arg name="obstacle_detect"     default="true"/>
+    <arg name="publish_trajectory"  default="true"/>
+    <arg name="wheelchair_pose"     default="true"/>
+    <arg name="arrow_display"       default="true"/>
 
-    <arg name="playback_file" default="long_sample.bag"/>
+    <!-- Autonomous mode variables -->
+    <arg name="autonomous"          default="false"/>
+    <arg name="static_map"          default="true"/>
+    <arg name="map"                 default="prl.yaml"/>
 
-    
-    <node pkg="rosbag" type="play" name="rosbag" args ="--clock $(find hololens_project)/bag/$(arg playback_file)"/>
 
+    <include file="$(find arta)/launch/arta.launch"/>
 
+    <include file="$(find arta)/launch/localisation.launch">
+        <arg name="amcl" default="true"/>
+        <arg name="map" default="$(arg map)"/>
+        <arg name="gmapping" default="false"/>
+        <arg name="hector_mapping" default="false"/>
+    </include>
 
+    <include file="$(find arta)/launch/navigation.launch">
+        <arg name="autonomous" value="$(arg autonomous)"/>
+        <arg name="static_map" value="$(arg static_map)"/>
+    </include>
 
     <!-- HERE BE MINIMAP NODES -->
     <node if="$(arg minimap)" pkg="hololens_project" name="minimap_node" type="minimap_processing.py" output="screen"/>
@@ -37,11 +49,7 @@
 
     <!-- HERE BE SMOOTHED JS NODE -->
     <node if="$(arg arrow_display)" pkg="hololens_project" name="smooth_js_node" type="smooth_js_node" output="screen"/>
-
-
-    <!-- HERE BE WORLD ALIGNMENT
-    <node pkg="hololens_project" name="world_alignment_node" type="world_alignment_node" output="screen"/> -->
-
+    
 
     <!-- HERE BE RVIZ -->
     <group ns="arta_rviz" if="$(arg rviz)">

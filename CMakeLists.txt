@@ -13,7 +13,12 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   message_generation
+  tf
+  roslib
 )
+
+find_package(OpenCV)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -139,6 +144,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/hololens_project_node.cpp)
 add_executable(smooth_js_node src/smooth_js_node.cpp)
+add_executable(world_alignment_node src/ros_hololens_alignment_node.cpp)
 
 
 
@@ -162,6 +168,10 @@ target_link_libraries(smooth_js_node
   ${catkin_LIBRARIES}
 )
 
+target_link_libraries(world_alignment_node
+	${catkin_LIBRARIES}
+	${OpenCV_LIBS}
+)
 
 #############
 ## Install ##
