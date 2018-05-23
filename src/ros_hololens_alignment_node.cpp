@@ -11,7 +11,7 @@
 #include <sys/time.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
-#include <geometry_msgs/PolygonStamped.h>
+#include <geometry_msgs/Polygon.h>
 
 
 float findTransform(std::vector<std::pair<cv::Mat, cv::Mat>> commonPoints, cv::Mat &R, cv::Mat &t); 
@@ -25,12 +25,12 @@ std::vector<std::pair<cv::Mat, cv::Mat>> alignmentPoints;
 bool updated = false;
 
 // Callback function
-void hololensPointsCB(geometry_msgs::PolygonStampedConstPtr msg){
+void hololensPointsCB(geometry_msgs::PolygonConstPtr msg){
   alignmentPoints.clear();
 
-  cv::Mat holo_p1(cv::Vec3f(msg->polygon.points[0].x, msg->polygon.points[0].y, msg->polygon.points[0].z));
-  cv::Mat holo_p2(cv::Vec3f(msg->polygon.points[1].x, msg->polygon.points[1].y, msg->polygon.points[1].z));
-  cv::Mat holo_p3(cv::Vec3f(msg->polygon.points[2].x, msg->polygon.points[2].y, msg->polygon.points[2].z));
+  cv::Mat holo_p1(cv::Vec3f(msg->points[0].x, msg->points[0].y, msg->points[0].z));
+  cv::Mat holo_p2(cv::Vec3f(msg->points[1].x, msg->points[1].y, msg->points[1].z));
+  cv::Mat holo_p3(cv::Vec3f(msg->points[2].x, msg->points[2].y, msg->points[2].z));
 
   alignmentPoints.push_back(std::make_pair(holo_p1, ros_p1));
   alignmentPoints.push_back(std::make_pair(holo_p2, ros_p2));
@@ -68,11 +68,11 @@ int main(int argc, char **argv) {
             R.at<float>(1, 0), R.at<float>(1, 1), R.at<float>(1, 2),
             R.at<float>(2, 0), R.at<float>(2, 1), R.at<float>(2, 2));
         
-        tf::Transform T_RH(rotation, origin); // Transformation from ROS to Hololens
+        tf::Transform T_RH(rotation, origin); // ROS-Hololens Transformation 
         tf::StampedTransform TStamped(T_RH, ros::Time::now(), "holoWorld", "rosWorld");
 
-        std::cout << TStamped << std::endl;
         br.sendTransform(TStamped);
+        updated = false;
       }
 
       ros::spinOnce();
@@ -132,7 +132,6 @@ float findTransform(std::vector<std::pair<cv::Mat, cv::Mat>> commonPoints, cv::M
     cv::Mat ros_est = R * it->first + t;
     cv::Mat delta = ros_est - it->second;
     err += cv::norm(delta);
-    std::cout << delta << std::endl; 
   }
    
   err /= commonPoints.size();
