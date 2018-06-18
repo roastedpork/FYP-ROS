@@ -1,12 +1,12 @@
 <launch>
 
+    <!-- Toggle Visualisations -->
     <arg name="rviz"                default="true"/>
     <arg name="minimap"             default="true"/>
     <arg name="obstacle_detect"     default="true"/>
     <arg name="publish_trajectory"  default="true"/>
     <arg name="wheelchair_pose"     default="true"/>
-    <arg name="arrow_display"       default="true"/>
-    <arg name="rear_view"           default="false"/>"
+    <arg name="rear_view"           default="true"/>"
 
     <!-- Autonomous mode variables -->
     <arg name="autonomous"          default="false"/>
@@ -50,10 +50,6 @@
 
     <!-- WHEELCHAIR POSE, MIGHT BE REDUNDANT NOW -->
     <node if="$(arg wheelchair_pose)" pkg="hololens_project" name="wheelchair_publisher_node" type="wheelchair_pose_publisher.py" output="screen"/>
-
-    <!-- HERE BE SMOOTHED JS NODE -->
-    <node if="$(arg arrow_display)" pkg="hololens_project" name="smooth_js_node" type="smooth_js_node" output="screen"/>
-    
 
     <!-- HERE BE WORLD ALIGNMENT AND TRACKING -->
     <node pkg="hololens_project" name="world_alignment_node" type="world_alignment_node" output="screen"/>
