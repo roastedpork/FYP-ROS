@@ -6,20 +6,24 @@
     <arg name="publish_trajectory"  default="true"/>
     <arg name="wheelchair_pose"     default="true"/>
     <arg name="arrow_display"       default="true"/>
+    <arg name="rear_view"           default="false"/>"
 
     <!-- Autonomous mode variables -->
     <arg name="autonomous"          default="false"/>
-    <arg name="static_map"          default="true"/>
-    <arg name="map"                 default="prl.yaml"/>
+    <arg name="static_map"          default="false"/>
+    <arg name="map"                 default="eye_experiment_map.yaml"/>
+    <arg name="gmapping"            default="false"/>
+    <arg name="hector_mapping"      default="false"/>
+    <arg name="amcl"                default="true"/>
 
 
     <include file="$(find arta)/launch/arta.launch"/>
 
     <include file="$(find arta)/launch/localisation.launch">
-        <arg name="amcl" default="true"/>
-        <arg name="map" default="$(arg map)"/>
-        <arg name="gmapping" default="false"/>
-        <arg name="hector_mapping" default="false"/>
+        <arg name="amcl"           default="$(arg amcl)"/>
+        <arg name="map"            default="$(arg map)"/>
+        <arg name="gmapping"       default="$(arg gmapping)"/>
+        <arg name="hector_mapping" default="$(arg hector_mapping)"/>
     </include>
 
     <include file="$(find arta)/launch/navigation.launch">
@@ -27,17 +31,17 @@
         <arg name="static_map" value="$(arg static_map)"/>
     </include>
 
-    <!-- HERE BE MINIMAP NODES -->
+    <!-- HERE BE MINIMAP NODES>
     <node if="$(arg minimap)" pkg="hololens_project" name="minimap_node" type="minimap_processing.py" output="screen"/>
     <node if="$(arg minimap)" pkg="image_view" name="minimap_view_node" type="image_view" output="screen">
         <remap from="image" to="/minimap/image"/>
     </node>
     <node if="$(arg minimap)" pkg="hololens_vis" name="image_encoder_node" type="imageToString" output="screen" args="/minimap/image /hololens/display/encoded_minimap"/>
-    
+    -->
 
     <!-- HERE BE OBSTACLE DETECTION -->
     <node if="$(arg obstacle_detect)" pkg="hololens_project" name="obstacle_detection_node" type="obstacle_detection.py" output="screen"/>
-    <node if="$(arg obstacle_detect)" pkg="image_view" name="obstacle_view_node" type="image_view" output="screen">
+    <node if="$(arg obstacle_detect)" pkg="image_view"       name="obstacle_view_node"      type="image_view"            output="screen">
         <remap from="image" to="/formatted_grid/obs_debug_image"/>
     </node>
 
@@ -51,13 +55,20 @@
     <node if="$(arg arrow_display)" pkg="hololens_project" name="smooth_js_node" type="smooth_js_node" output="screen"/>
     
 
+    <!-- HERE BE WORLD ALIGNMENT AND TRACKING -->
+    <node pkg="hololens_project" name="world_alignment_node" type="world_alignment_node" output="screen"/>
+    <node pkg="hololens_project" name="waypoint_node" type="waypoint_node" output="screen"/>
+  
+    <!-- HERE BE REAR CAM LAUNCH -->
+    <include if="$(arg rear_view)" file="$(find hololens_project)/launch/camera.launch"/>
+
     <!-- HERE BE RVIZ -->
     <group ns="arta_rviz" if="$(arg rviz)">
         <param name="robot_description" command="$(find xacro)/xacro.py --inorder '$(find arta_description)/urdf/arta.urdf.xacro'"/>
         
-		<node pkg="joint_state_publisher" name="joint_state_publisher" type="joint_state_publisher"/>
-		<!-- Convert joint states to TF transforms for rviz, etc -->
-		<node pkg="robot_state_publisher" name="robot_state_publisher" type="state_publisher"/>
+		    <node pkg="joint_state_publisher" name="joint_state_publisher" type="joint_state_publisher"/>
+		    <!-- Convert joint states to TF transforms for rviz, etc -->
+		    <node pkg="robot_state_publisher" name="robot_state_publisher" type="state_publisher"/>
 	      
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find hololens_project)/rviz/arta.rviz"/>
     </group>

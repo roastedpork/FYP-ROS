@@ -58,6 +58,8 @@ add_message_files(
   FILES
   Obstacle.msg
   ObstacleArray.msg
+  Primitive.msg
+  PrimitiveArray.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -79,6 +81,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs
   geometry_msgs
+  hololens_project
 )
 
 ################################################
@@ -145,7 +148,7 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/hololens_project_node.cpp)
 add_executable(smooth_js_node src/smooth_js_node.cpp)
 add_executable(world_alignment_node src/ros_hololens_alignment_node.cpp)
-
+add_executable(waypoint_node src/waypoint_node.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -158,6 +161,8 @@ add_executable(world_alignment_node src/ros_hololens_alignment_node.cpp)
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(smooth_js_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(world_alignment_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(waypoint_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -171,6 +176,10 @@ target_link_libraries(smooth_js_node
 target_link_libraries(world_alignment_node
 	${catkin_LIBRARIES}
 	${OpenCV_LIBS}
+)
+
+target_link_libraries(waypoint_node
+  ${catkin_LIBRARIES}
 )
 
 #############

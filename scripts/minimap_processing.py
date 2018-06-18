@@ -70,22 +70,22 @@ class Minimap():
         prev_x = None
         prev_y = None
 
+        if self.__desired_route is not None:
+            for cell in self.__desired_route:
+                metre_x = cell.x-position[0]
+                metre_y = cell.y-position[1]
+                
+                ind_x = int(metre_x/resolution + centre_r) 
+                ind_y = int(metre_y/resolution + centre_c)
+                
+                if not prev_x:
+                    prev_x = ind_x
+                    prev_y = ind_y
+                    continue
 
-        for cell in self.__desired_route:
-            metre_x = cell.x-position[0]
-            metre_y = cell.y-position[1]
-            
-            ind_x = int(metre_x/resolution + centre_r) 
-            ind_y = int(metre_y/resolution + centre_c)
-            
-            if not prev_x:
+                cv2.line(img, (prev_x, prev_y), (ind_x, ind_y), (0,255,0), 2)
                 prev_x = ind_x
                 prev_y = ind_y
-                continue
-
-            cv2.line(img, (prev_x, prev_y), (ind_x, ind_y), (0,255,0), 2)
-            prev_x = ind_x
-            prev_y = ind_y
   
         cv2.circle(img, (centre_r, centre_c), 5, (255,0,0), -1)
         return img

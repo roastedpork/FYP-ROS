@@ -11,26 +11,31 @@
 #include <sys/time.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
-#include <geometry_msgs/Polygon.h>
+#include <geometry_msgs/PolygonStamped.h>
 
 
 float findTransform(std::vector<std::pair<cv::Mat, cv::Mat>> commonPoints, cv::Mat &R, cv::Mat &t); 
 
 // Reference points relative to ROS map
-cv::Mat ros_p1(cv::Vec3f(2,-1,0));
-cv::Mat ros_p2(cv::Vec3f(0,0,0));
-cv::Mat ros_p3(cv::Vec3f(0,-1,0));
+// cv::Mat ros_p1(cv::Vec3f(2,-1,0));
+// cv::Mat ros_p2(cv::Vec3f(0,0,0));
+// cv::Mat ros_p3(cv::Vec3f(0,-1,0));
+cv::Mat ros_p1(cv::Vec3f(1.3101,-1.2779,0));
+cv::Mat ros_p2(cv::Vec3f(1.3951,1.0407,0));
+cv::Mat ros_p3(cv::Vec3f(-3.0027,1.1805,0));
+
 std::vector<std::pair<cv::Mat, cv::Mat>> alignmentPoints;
+
 
 bool updated = false;
 
 // Callback function
-void hololensPointsCB(geometry_msgs::PolygonConstPtr msg){
+void hololensPointsCB(geometry_msgs::PolygonStampedConstPtr msg){
   alignmentPoints.clear();
 
-  cv::Mat holo_p1(cv::Vec3f(msg->points[0].x, msg->points[0].y, msg->points[0].z));
-  cv::Mat holo_p2(cv::Vec3f(msg->points[1].x, msg->points[1].y, msg->points[1].z));
-  cv::Mat holo_p3(cv::Vec3f(msg->points[2].x, msg->points[2].y, msg->points[2].z));
+  cv::Mat holo_p1(cv::Vec3f(msg->polygon.points[0].x, msg->polygon.points[0].y, msg->polygon.points[0].z));
+  cv::Mat holo_p2(cv::Vec3f(msg->polygon.points[1].x, msg->polygon.points[1].y, msg->polygon.points[1].z));
+  cv::Mat holo_p3(cv::Vec3f(msg->polygon.points[2].x, msg->polygon.points[2].y, msg->polygon.points[2].z));
 
   alignmentPoints.push_back(std::make_pair(holo_p1, ros_p1));
   alignmentPoints.push_back(std::make_pair(holo_p2, ros_p2));
@@ -69,7 +74,7 @@ int main(int argc, char **argv) {
             R.at<float>(2, 0), R.at<float>(2, 1), R.at<float>(2, 2));
         
         tf::Transform T_RH(rotation, origin); // ROS-Hololens Transformation 
-       tf::StampedTransform TStamped(T_RH, ros::Time::now(), "rosWorld", "holoWorld");
+       tf::StampedTransform TStamped(T_RH, ros::Time::now(), "map", "Unity");
 
         br.sendTransform(TStamped);
         updated = false;

@@ -1,0 +1,30 @@
+<launch>
+
+  <arg name="debug"       default="false"/>
+  <arg name="path"        default="/dev/video0" if="$(arg debug)"/>
+  <arg name="path"        default="/dev/video1" unless="$(arg debug)"/>
+  <arg name="camera_info" default="file:///home/human/.camera_info/rear_cam_640x480.yaml"/>
+
+  <node pkg="cv_camera" type="cv_camera_node" name="rear_cam">
+    <param name="device_path"     value="$(arg path)"/>
+    <param name="frame_id"        value="rear_cam"/>
+    <param name="image_width"     value="640" />
+    <param name="image_height"    value="480" />
+    <param name="camera_info_url" value="$(arg camera_info)" unless="$(arg debug)"/>
+  </node>
+
+  <node unless="$(arg debug)" ns="rear_cam" pkg="image_proc" type="image_proc" name="image_rectifier_node" />
+  <node unless="$(arg debug)" ns="rear_cam" pkg="image_view" type="image_view" name="rear_cam_view">
+    <param name="image_transport" value="compressed"/>
+
+    <remap from="image" to="/rear_cam/image_rect_color"/>
+  </node>
+
+  <!-- node ns="rear_cam" pkg="image_view" type="image_view" name="image_raw_view">
+    <remap from="image" to="/rear_cam/image_raw"/>
+  </node-->
+
+  <node unless="$(arg debug)" pkg="hololens_vis" name="image_encoder_node" type="imageToString" output="screen" args="/rear_cam/image_rect_color /hololens/display/rear_cam"/>
+  <node if="$(arg debug)" pkg="hololens_vis" name="image_encoder_node" type="imageToString" output="screen" args="/rear_cam/image_raw /hololens/display/rear_cam"/>
+
+</launch>
