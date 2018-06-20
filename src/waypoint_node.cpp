@@ -124,6 +124,7 @@ public:
           double dx = wpGoals.front().pose.position.x - transform.getOrigin().x();
           double dy = wpGoals.front().pose.position.y - transform.getOrigin().y();
 
+          std::cout << "[waypoint] dx=" << dx << ", dy=" << dy << std::endl;
           if(dx*dx + dy*dy < goalTolerance*goalTolerance) wpGoals.pop_front(); 
 
         } catch(const std::exception &e){
