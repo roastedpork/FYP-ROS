@@ -15,7 +15,7 @@
 
 class Waypoints{
 public:
-  Waypoints() : newWPGoal(false), newGTGoal(false), goalTolerance(0.50)
+  Waypoints() : newWPGoal(false), newGTGoal(false), goalTolerance(0.80)
   {
     stopPose.header.frame_id = "base_link";
     stopPose.pose.position.x = 0.0;
@@ -76,10 +76,6 @@ public:
   
       listener_.transformPose("/map", in, out);
 
-      std::cout << in << std::endl;
-      std::cout << out << std::endl;
-
-
       ctGoal = out;
   
       newGTGoal = true;
@@ -124,6 +120,7 @@ public:
           double dx = wpGoals.front().pose.position.x - transform.getOrigin().x();
           double dy = wpGoals.front().pose.position.y - transform.getOrigin().y();
 
+          std::cout << "[waypoint] x=" << transform.getOrigin().x() << ", y=" << transform.getOrigin().y() << std::endl;
           std::cout << "[waypoint] dx=" << dx << ", dy=" << dy << std::endl;
           if(dx*dx + dy*dy < goalTolerance*goalTolerance) wpGoals.pop_front(); 
 

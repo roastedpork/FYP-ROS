@@ -23,10 +23,10 @@ def main():
     listener = tf.TransformListener()
     
     while not rospy.is_shutdown():
-        if listener.frameExists("/Unity"):
+        if listener.frameExists("Unity"):
             try:
                 curr_time = rospy.Time(0)
-                (position, rotation) = listener.lookupTransform('/base_link', '/Unity', curr_time)
+                (position, rotation) = listener.lookupTransform('/Unity', '/base_link', curr_time)
                 
                 
                 msg = Pose()

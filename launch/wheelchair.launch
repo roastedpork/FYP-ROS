@@ -6,7 +6,7 @@
     <arg name="obstacle_detect"     default="true"/>
     <arg name="publish_trajectory"  default="true"/>
     <arg name="wheelchair_pose"     default="true"/>
-    <arg name="rear_view"           default="true"/>"
+    <arg name="rear_view"           default="true"/>
 
     <!-- Autonomous mode variables -->
     <arg name="autonomous"          default="false"/>
@@ -31,13 +31,13 @@
         <arg name="static_map" value="$(arg static_map)"/>
     </include>
 
-    <!-- HERE BE MINIMAP NODES>
+    <!-- HERE BE MINIMAP NODES -->
     <node if="$(arg minimap)" pkg="hololens_project" name="minimap_node" type="minimap_processing.py" output="screen"/>
     <node if="$(arg minimap)" pkg="image_view" name="minimap_view_node" type="image_view" output="screen">
         <remap from="image" to="/minimap/image"/>
     </node>
-    <node if="$(arg minimap)" pkg="hololens_vis" name="image_encoder_node" type="imageToString" output="screen" args="/minimap/image /hololens/display/encoded_minimap"/>
-    -->
+    <node if="$(arg minimap)" pkg="hololens_vis" name="map_encoder_node" type="imageToString" output="screen" args="/minimap/image /hololens/display/encoded_minimap"/>
+    
 
     <!-- HERE BE OBSTACLE DETECTION -->
     <node if="$(arg obstacle_detect)" pkg="hololens_project" name="obstacle_detection_node" type="obstacle_detection.py" output="screen"/>
